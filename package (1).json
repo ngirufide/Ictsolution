@@ -1,0 +1,12 @@
+{
+  "name": "bisoke-qr-service-app",
+  "version": "1.0.0",
+  "description": "QR service ordering and payment dashboard for Bisoke ICT Solutions Center",
+  "main": "server.js",
+  "scripts": {"start": "node server.js", "dev": "node server.js"},
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "express": "^5.1.0",
+    "qrcode": "^1.5.4"
+  }
+}

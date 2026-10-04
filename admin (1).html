@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bisoke Admin Dashboard</title><link rel="stylesheet" href="/style.css"></head>
+<body>
+<header><div class="brand">BISOKE ADMIN DASHBOARD</div><a href="/">Customer page</a></header>
+<main>
+<section id="login" class="card"><h2>Admin login</h2><input id="pin" type="password" placeholder="Admin PIN"><button onclick="login()">Login</button><p id="loginMsg"></p></section>
+<section id="dash" class="hidden">
+<div class="stats"><div>Today<br><b id="today">0</b> RWF</div><div>All paid<br><b id="total">0</b> RWF</div><div>Orders<br><b id="orders">0</b></div><div>Pending/New<br><b id="pending">0</b></div></div>
+<section class="card"><h2>Orders</h2><div class="tablewrap"><table><thead><tr><th>#</th><th>Customer</th><th>Phone</th><th>Service</th><th>Total</th><th>Payment</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<section class="card"><h2>Your QR Code</h2><img id="qr" class="qr"><p id="qrUrl"></p></section>
+</section></main>
+<script>
+let PIN="";
+async function login(){
+ PIN=document.getElementById("pin").value;
+ const r=await fetch("/api/admin/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pin:PIN})});
+ if(!r.ok){loginMsg.textContent="Wrong PIN";return}
+ login.classList.add("hidden"); document.getElementById("login").classList.add("hidden"); document.getElementById("dash").classList.remove("hidden"); load(); 
+}
+async function load(){
+ const s=await (await fetch("/api/admin/stats?pin="+encodeURIComponent(PIN))).json();
+ today.textContent=s.today.toLocaleString(); total.textContent=s.total.toLocaleString(); orders.textContent=s.orders; pending.textContent=s.pending;
+ const data=await (await fetch("/api/admin/orders?pin="+encodeURIComponent(PIN))).json();
+ rows.innerHTML=data.map(o=>`<tr><td>${o.id}</td><td>${esc(o.customer_name)}</td><td>${esc(o.phone)}</td><td>${esc(o.service_name)} × ${o.quantity}</td><td>${o.total.toLocaleString()} RWF</td><td>${o.payment_status}</td><td><select onchange="status(${o.id},this.value)">${["NEW","PROCESSING","READY","COMPLETED","CANCELLED"].map(x=>`<option ${x===o.status?"selected":""}>${x}</option>`).join("")}</select></td></tr>`).join("");
+ const q=await (await fetch("/api/qr")).json(); qr.src=q.dataUrl; qrUrl.textContent=q.url;
+}
+async function status(id,v){await fetch(`/api/admin/orders/${id}/status?pin=${encodeURIComponent(PIN)}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({status:v})});load()}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+setInterval(()=>{if(PIN)load()},5000);
+</script></body></html>

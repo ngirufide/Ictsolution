@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bisoke ICT Services</title><link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header><div class="brand">BISOKE ICT SOLUTIONS CENTER</div><div class="tag">Scan • Choose • Order • Pay</div></header>
+<main>
+<section class="hero"><h1>Choose the service you need</h1><p>Scan the QR code or open this page to request a service.</p></section>
+<div id="services" class="grid"></div>
+
+<section class="card">
+<h2>Place your order</h2>
+<form id="orderForm">
+<label>Your name<input id="name" required></label>
+<label>Phone number<input id="phone" required placeholder="07..."></label>
+<label>Service<select id="service" required></select></label>
+<label>Quantity<input id="qty" type="number" min="1" value="1"></label>
+<label>Notes<textarea id="notes" placeholder="Extra instructions..."></textarea></label>
+<div class="total">Total: <strong id="total">0 RWF</strong></div>
+<button>Continue to payment</button>
+</form>
+<div id="payment" class="hidden"></div>
+<div id="result"></div>
+</section>
+</main>
+<script src="/app.js"></script>
+</body></html>
